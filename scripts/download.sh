@@ -5,7 +5,7 @@ if ["#$" == 2]; then
 	directoryurl=$2 # may be better to set this before if statement?
 	echo "Downloading genomes..."
 	mkdir -p data
-	find . ! -name 'file.txt' -type f -exec rm -f {} +
+	# find . ! -name 'file.txt' -type f -exec rm -f {} + # removed until further rework
 	wget -P ${directoryurl} ${directoryurl}
 	echo
 	if ["#$" == 3]; then
