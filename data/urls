@@ -6,3 +6,4 @@ https://bioinformatics.cnio.es/data/courses/decont/SPRET_EiJ-12.5dpp.1.2s_sRNA.f
 
 # Cont database URL
 # https://bioinformatics.cnio.es/data/courses/decont/contaminants.fasta.gz
+# Remove url from here and invoke it from wget directly, yet from the download script
