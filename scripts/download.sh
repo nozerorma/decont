@@ -1,14 +1,17 @@
 ##### DOWNLOAD SCRIPT ####
 
-if ["$#" -eq 2]; then
+mkdir -p data
+find data ! -name 'urls' -type f -exec rm -f {} + # removed until further rework
+
+if [ "$#" -eq 2 ]
+then
 	downloadurl=$1
 	directoryurl=$2 # may be better to set this before if statement?
 	echo "Downloading genomes..."
-	mkdir -p data
-	# find . ! -name 'file.txt' -type f -exec rm -f {} + # removed until further rework
 	wget -P ${directoryurl} ${downloadurl}
 	echo
-	if ["$#" -eq 3]; then
+	if [ $3="yes" ] # works but it's outside the string
+	then
 		echo "Decompressing downloaded genomes..."
 		gunzip -kr ${directoryurl}
 	else 
@@ -19,7 +22,7 @@ if ["$#" -eq 2]; then
 # downloadurl=$1, directoryurl=$2, decompressurl=$3, filter=$4
 	
 else
-	echo "Usage: $0 <sampleid>"
+	echo "Usage: $0"
 	exit 1
 fi
 
