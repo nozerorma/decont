@@ -1,14 +1,14 @@
 ##### DOWNLOAD SCRIPT ####
 
-if ["#$" == 2]; then
+if ["$#" -eq 2]; then
 	downloadurl=$1
 	directoryurl=$2 # may be better to set this before if statement?
 	echo "Downloading genomes..."
 	mkdir -p data
 	# find . ! -name 'file.txt' -type f -exec rm -f {} + # removed until further rework
-	wget -P ${directoryurl} ${directoryurl}
+	wget -P ${directoryurl} ${downloadurl}
 	echo
-	if ["#$" == 3]; then
+	if ["$#" -eq 3]; then
 		echo "Decompressing downloaded genomes..."
 		gunzip -kr ${directoryurl}
 	else 
