@@ -7,11 +7,11 @@ then
 	sampleid=$(basename $downloadurl)
         echo "Downloading $sampleid ..."
 	echo
-	wget -O $directoryurl/$sampleid $downloadurl 
+	wget -nc -O $directoryurl/$sampleid $downloadurl 
 	echo
 	echo "Extracting $sampleid ..."
 	echo
-	gunzip -vfk $directoryurl/$sampleid 
+	gunzip -fk $directoryurl/$sampleid 
 	echo
 	if [ "$4" == "filt" ] # Filter small nuclear sequences
 	then
@@ -20,9 +20,9 @@ then
 		sampleid=$(basename $downloadurl .gz)
 		mv $directoryurl/$sampleid $directoryurl/unfiltered_$sampleid
 		grep -vwE "small nuclear" $directoryurl/unfiltered_$sampleid > $directoryurl/$sampleid	
-	else
-		echo "Skipping contaminants database filtering..."	
-		echo
+	#else
+	#	echo "Skipping contaminants database filtering..."	
+	#	echo
 	fi
 
 else

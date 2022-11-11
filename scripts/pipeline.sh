@@ -1,11 +1,16 @@
 echo ####### RNA DECONTAMINATION PIPELINE by Miguel Ramón Alonso #######
 
+echo "Would you like to remove any remaining files from previous runs? Y/n"
+read removedebris
+if [ $removedebris == "Y" ]
+then
+	find data res out log ! -name 'urls' -type f -exec rm -rf {} \; # cleanse old data excluding gitkeeps and urls
+fi
+
 echo "Downloading required files..."
 echo
 mkdir -p data
-find data ! -name 'urls' -type f -exec rm -rf {} res/* \; # cleanse data and res directories excluding urls file 
-
-for url in $(grep 'https' data/urls | grep -v 'contaminants') # Download and extract required genomes
+for url in $(grep 'https' data/urls | grep -v 'contaminants' | sort -u) # Download and extract required genomes
 do
 	bash scripts/download.sh $url data yes
 done
@@ -14,13 +19,14 @@ bash scripts/download.sh $url res yes filt # Download, extract and filter decont
 
 echo "Building contaminants index..." 
 echo
-bash scripts/index.sh res/contaminants.fasta res/contaminants_idx # Build contaminants index
+#bash scripts/index.sh res/contaminants.fasta res/contaminants_idx # Build contaminants index
 
 # Merge the samples into a single file
-#for sid in $(<list_of_sample_ids>) #TODO
-#do
- #   bash scripts/merge_fastqs.sh data out/merged $sid
-#done
+mkdir -p out && mkdir -p out/merged
+for sid in $(find data -name *.fastq -exec basename {} \; | cut -d"-" -f1 | sort -u)
+do
+	bash scripts/merge_fastqs.sh data out/merged $sid
+done
 
 # TODO: run cutadapt for all merged files
 # cutadapt -m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed \
