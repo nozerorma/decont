@@ -1,4 +1,4 @@
-##### DOWNLOAD SCRIPT ####
+#### DOWNLOAD SCRIPT ####
 
 if [ "$#" -eq 3 ] || [ "$#" -eq 4 ] && [ "$3" == "yes" ] # Download and decompress required files	
 then
