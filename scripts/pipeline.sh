@@ -2,23 +2,25 @@ echo ####### RNA DECONTAMINATION PIPELINE by Miguel Ramón Alonso #######
 
 # Download all the files specified in data/filenames
 # Allow uncompression
+
 echo "Downloading required files..."
 echo
 mkdir -p data
 find data ! -name 'urls' -type f -exec rm -f {} + 
 find res -type f -exec rm -f {} + 
+
 for url in $(grep https data/urls | sort -u) # set 
 do
 	bash scripts/download.sh $url data yes
 done
 
-# Download the contaminants fasta file, uncompress it, and
-# filter to remove all small nuclear RNAs
-bash scripts/download.sh https://bioinformatics.cnio.es/data/courses/decont/contaminants.fasta.gz res yes filt #dont really like that much, check alt
+# Download the contaminants fasta file, uncompress it, and filter to remove all small nuclear RNAs
+bash scripts/download.sh https://bioinformatics.cnio.es/data/courses/decont/contaminants.fasta.gz res yes filt #dont really like that much, check for alts
 
 
 # Index the contaminants file
-#bash scripts/index.sh res/contaminants.fasta res/contaminants_idx
+echo "Building contaminants index..."
+bash scripts/index.sh res/contaminants.fasta res/contaminants_idx
 
 # Merge the samples into a single file
 #for sid in $(<list_of_sample_ids>) #TODO

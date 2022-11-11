@@ -1,6 +1,6 @@
 ##### DOWNLOAD SCRIPT ####
 
-if [ "$#" -eq 3 ] || [ "$#" -eq 4 ] && [ "$3" == "yes" ]	
+if [ "$#" -eq 3 ] || [ "$#" -eq 4 ] && [ "$3" == "yes" ] # Download and decompress required files	
 then
 	downloadurl=$1
 	directoryurl=$2 # may be better to set this before if statement?
@@ -13,7 +13,7 @@ then
 	echo
 	gunzip -vfk ${directoryurl}/${sampleid} 
 	echo
-	if [ "$4" == "filt" ]
+	if [ "$4" == "filt" ] # Filter small nuclear sequences
 	then
 		echo "Removing small nuclear sequences from contaminants database..."
 		echo
@@ -29,16 +29,3 @@ else
 	echo "Usage: $0 <directoryurl> <downloadurl> <compression> <filter>"
 	exit 1
 fi
-
-# - filter the sequences based on a word contained in their header lines:
-#   sequences containing the specified word in their header should be **excluded**
-#
-# Example of the desired filtering:
-#
-#   > this is my sequence
-#   CACTATGGGAGGACATTATAC
-#   > this is my second sequence
-#   CACTATGGGAGGGAGAGGAGA
-#   > this is another sequence
-#   CCAGGATTTACAGACTTTAAA
-#
