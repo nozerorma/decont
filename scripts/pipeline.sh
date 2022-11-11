@@ -1,3 +1,5 @@
+echo ####### RNA DECONTAMINATION PIPELINE by Miguel Ramón Alonso #######
+
 # Download all the files specified in data/filenames
 # Allow uncompression
 echo "Downloading required files..."
