@@ -21,11 +21,12 @@ echo "Building contaminants index..."
 echo
 bash scripts/index.sh res/contaminants.fasta res/contaminants_idx # Build contaminants index
 
-# Merge the samples into a single file
 mkdir -p out && mkdir -p out/merged
 for sid in $(find data -name *.fastq -exec basename {} \; | cut -d"-" -f1 | sort -u)
 do
-	bash scripts/merge_fastqs.sh data out/merged $sid
+	echo "Merging $sid sample files together..."
+	echo
+	bash scripts/merge_fastqs.sh data out/merged $sid # Merge the samples into a single file
 done
 
 # TODO: run cutadapt for all merged files
