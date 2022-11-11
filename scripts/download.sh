@@ -1,6 +1,6 @@
 ##### DOWNLOAD SCRIPT ####
 
-if [ "$#" -eq 3 ] && [ "$3" == "yes" ]
+if [ "$#" -eq 3 ] || [ "$#" -eq 4 ] && [ "$3" == "yes" ]	
 then
 	downloadurl=$1
 	directoryurl=$2 # may be better to set this before if statement?
@@ -11,22 +11,25 @@ then
 	echo
 	echo "Extracting $sampleid ..."
 	echo
-	gunzip -vfk ${directoryurl}/${sampleid} # should work both for genomes and contaminants
+	gunzip -vfk ${directoryurl}/${sampleid} 
 	echo
+	if [ "$4" == "filt" ]
+	then
+		echo "Removing small nuclear sequences from contaminants database..."
+		echo
+		sampleid=$(basename ${downloadurl} .gz)
+		mv ${directoryurl}/${sampleid} ${directoryurl}/unfiltered_${sampleid}
+		grep -vwE "small nuclear" ${directoryurl}/unfiltered_${sampleid} > ${directoryurl}/${sampleid}	
+	else
+		echo "Skipping contaminants database filtering..."	
+		echo
+	fi
 
-# Case 3 args:
-# downloadurl=$1, directoryurl=$2, decompressurl=$3, filter=$4
-	
 else
-	echo "Usage: $0 <directoryurl> <downloadurl> <enableuncompression"
+	echo "Usage: $0 <directoryurl> <downloadurl> <compression> <filter>"
 	exit 1
 fi
 
-# This script should download the file specified in the first argument ($1),
-# place it in the directory specified in the second argument ($2),
-# and *optionally*:
-# - uncompress the downloaded file with gunzip if the third
-#   argument ($3) contains the word "yes"
 # - filter the sequences based on a word contained in their header lines:
 #   sequences containing the specified word in their header should be **excluded**
 #
@@ -39,4 +42,3 @@ fi
 #   > this is another sequence
 #   CCAGGATTTACAGACTTTAAA
 #
-#   If $4 == "another" only the **first two sequence** should be output
