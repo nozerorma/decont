@@ -1,31 +1,20 @@
 ##### DOWNLOAD SCRIPT ####
 
-mkdir -p data
-find data ! -name 'urls' -type f -exec rm -f {} + # removed until further rework
-
-if [ "$#" -eq 2 ]
+if [ "$#" -eq 3 ] && [ "$3" == "yes" ]
 then
 	downloadurl=$1
 	directoryurl=$2 # may be better to set this before if statement?
 	echo "Downloading genomes..."
-	wget -P ${directoryurl} ${downloadurl}
-	echo
-	if [ $3="yes" ] # works but it's outside the string
-	then
-		echo "Decompressing downloaded genomes..."
-		gunzip -kr ${directoryurl}
-	else 
-		echo "Skipping genome decompression."
-	fi
+	genomeid=$(basename ${downloadurl})
+	wget -O ${directoryurl}/${genomeid} ${downloadurl} && gunzip -k ${directoryurl}/${genomeid} 
 
 # Case 3 args:
 # downloadurl=$1, directoryurl=$2, decompressurl=$3, filter=$4
 	
 else
-	echo "Usage: $0"
+	echo "Usage: $0 <directoryurl> <downloadurl> <enableuncompression"
 	exit 1
 fi
-
 
 # This script should download the file specified in the first argument ($1),
 # place it in the directory specified in the second argument ($2),
