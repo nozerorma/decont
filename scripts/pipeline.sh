@@ -1,7 +1,10 @@
-#Download all the files specified in data/filenames
+# Download all the files specified in data/filenames
 # Allow uncompression
+echo "Downloading required files..."
+echo
 mkdir -p data
 find data ! -name 'urls' -type f -exec rm -f {} + 
+find res -type f -exec rm -f {} + 
 for url in $(grep https data/urls | sort -u) # set 
 do
 	bash scripts/download.sh $url data yes
@@ -9,7 +12,7 @@ done
 
 # Download the contaminants fasta file, uncompress it, and
 # filter to remove all small nuclear RNAs
-#bash scripts/download.sh <contaminants_url> res yes #TODO
+bash scripts/download.sh https://bioinformatics.cnio.es/data/courses/decont/contaminants.fasta.gz res yes #dont really like that much, check alt
 
 # Index the contaminants file
 #bash scripts/index.sh res/contaminants.fasta res/contaminants_idx

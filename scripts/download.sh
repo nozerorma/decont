@@ -4,9 +4,15 @@ if [ "$#" -eq 3 ] && [ "$3" == "yes" ]
 then
 	downloadurl=$1
 	directoryurl=$2 # may be better to set this before if statement?
-	echo "Downloading genomes..."
-	genomeid=$(basename ${downloadurl})
-	wget -O ${directoryurl}/${genomeid} ${downloadurl} && gunzip -k ${directoryurl}/${genomeid} 
+	sampleid=$(basename ${downloadurl})
+        echo "Downloading $sampleid ..."
+	echo
+	wget -O ${directoryurl}/${sampleid} ${downloadurl} 
+	echo
+	echo "Extracting $sampleid ..."
+	echo
+	gunzip -vfk ${directoryurl}/${sampleid} # should work both for genomes and contaminants
+	echo
 
 # Case 3 args:
 # downloadurl=$1, directoryurl=$2, decompressurl=$3, filter=$4
