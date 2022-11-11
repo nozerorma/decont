@@ -1,7 +1,10 @@
 #Download all the files specified in data/filenames
+# Allow uncompression
+mkdir -p data
+find data ! -name 'urls' -type f -exec rm -f {} + # removed until further rework
 for url in $(grep https data/urls | sort -u) # set 
 do
-    bash scripts/download.sh $url data
+	bash scripts/download.sh $url data yes
 done
 
 # Download the contaminants fasta file, uncompress it, and
