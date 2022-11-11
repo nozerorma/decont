@@ -1,27 +1,20 @@
 echo ####### RNA DECONTAMINATION PIPELINE by Miguel Ramón Alonso #######
 
-# Download all the files specified in data/filenames
-# Allow uncompression
-
 echo "Downloading required files..."
 echo
 mkdir -p data
 find data ! -name 'urls' -type f -exec rm -rf {} res/* \; # cleanse data and res directories excluding urls file 
 
-for url in $(grep 'https' data/urls | grep -v 'contaminants') # set 
+for url in $(grep 'https' data/urls | grep -v 'contaminants') # Download and extract required genomes
 do
 	bash scripts/download.sh $url data yes
 done
-
-# Download the contaminants fasta file, uncompress it, and filter to remove all small nuclear RNAs
 url=$(grep 'contaminants' data/urls)
-bash scripts/download.sh $url res yes filt
+bash scripts/download.sh $url res yes filt # Download, extract and filter decontaminants database
 
-
-# Index the contaminants file
-echo "Building contaminants index..."
+echo "Building contaminants index..." 
 echo
-bash scripts/index.sh res/contaminants.fasta res/contaminants_idx
+bash scripts/index.sh res/contaminants.fasta res/contaminants_idx # Build contaminants index
 
 # Merge the samples into a single file
 #for sid in $(<list_of_sample_ids>) #TODO
