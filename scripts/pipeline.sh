@@ -4,7 +4,7 @@ echo "Would you like to remove any remaining files from previous runs? Y/n"
 read removedebris
 if [ $removedebris == "Y" ]
 then
-	find data/* res/* out/* log/* ! \(-name 'urls' -o -name '.gitkeep'\) -type f -exec rm -rf {} \; # cleanse old data excluding gitkeeps and urls
+	find data/* res/* out/* log/* ! \( -name 'urls' -o -name '.gitkeep' \) -exec rm -rf {} \; # cleanse old data excluding gitkeeps and urls
 fi
 
 echo "Downloading required files..."
