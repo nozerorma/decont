@@ -4,7 +4,7 @@ echo "Would you like to remove any remaining files from previous runs? Y/n"
 read removedebris
 if [ $removedebris == "Y" ]
 then
-	find data res out log ! -name 'urls' -type f -exec rm -rf {} \; # cleanse old data excluding gitkeeps and urls
+	find data/* res/* out/* log/* ! \(-name 'urls' -o -name '.gitkeep'\) -type f -exec rm -rf {} \; # cleanse old data excluding gitkeeps and urls
 fi
 
 echo "Downloading required files..."
@@ -17,9 +17,18 @@ done
 url=$(grep 'contaminants' data/urls)
 bash scripts/download.sh $url res yes filt # Download, extract and filter decontaminants database
 
-echo "Building contaminants index..." 
-echo
-bash scripts/index.sh res/contaminants.fasta res/contaminants_idx # Build contaminants index
+if [ ! -d res/contaminants_idx ]
+then
+	echo "Contaminants database index has not been built"
+	echo
+	echo "Building contaminants database index..."
+	echo
+	bash scripts/index.sh res/contaminants.fasta res/contaminants_idx # Build contaminants index
+else
+	echo "Contaminants database index already exists, skipping"
+	echo
+	echo
+fi
 
 mkdir -p out && mkdir -p out/merged
 for sid in $(find data -name *.fastq -exec basename {} \; | cut -d"-" -f1 | sort -u)
