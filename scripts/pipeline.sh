@@ -6,8 +6,7 @@ echo ####### RNA DECONTAMINATION PIPELINE by Miguel Ramón Alonso #######
 echo "Downloading required files..."
 echo
 mkdir -p data
-find data ! -name 'urls' -type f -exec rm -f {} + 
-find res -type f -exec rm -f {} + 
+find data ! -name 'urls' -type f -exec rm -f {} res/* \; # cleanse data and res directories excluding urls file 
 
 for url in $(grep https data/urls | sort -u) # set 
 do
@@ -20,6 +19,7 @@ bash scripts/download.sh https://bioinformatics.cnio.es/data/courses/decont/cont
 
 # Index the contaminants file
 echo "Building contaminants index..."
+echo
 bash scripts/index.sh res/contaminants.fasta res/contaminants_idx
 
 # Merge the samples into a single file
