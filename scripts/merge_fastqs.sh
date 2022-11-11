@@ -3,7 +3,6 @@
 sampledir=$1
 outdir=$2
 sampleid=$3
-#cat "$sampledir/${sampleid}\*.1.1\*" "$sampledir/${sampleid}\*.1.2\*" > "$outdir/$sampleid"
 cat $sampledir/${sampleid}-* >> ${outdir}/${sampleid}
 
 

@@ -19,7 +19,7 @@ bash scripts/download.sh $url res yes filt # Download, extract and filter decont
 
 echo "Building contaminants index..." 
 echo
-#bash scripts/index.sh res/contaminants.fasta res/contaminants_idx # Build contaminants index
+bash scripts/index.sh res/contaminants.fasta res/contaminants_idx # Build contaminants index
 
 # Merge the samples into a single file
 mkdir -p out && mkdir -p out/merged
