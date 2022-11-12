@@ -1,4 +1,4 @@
-pipeline.sh
+pipeline.log
 Log.out
 out/*
 !out/.gitkeep

@@ -29,7 +29,7 @@ then
 	
 	if [ "$4" == "filt" ] # Filter small nuclear sequences
 	then
-		echo -e "Removing small nuclear sequences from contaminants database...\n"
+		echo -e "\nRemoving small nuclear sequences from contaminants database...\n"
 		sampleid=$(basename $downloadurl .gz)
 		mv $directoryurl/$sampleid $directoryurl/unfiltered_$sampleid
 		grep -vwE "small nuclear" $directoryurl/unfiltered_$sampleid > $directoryurl/$sampleid	

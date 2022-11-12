@@ -22,10 +22,12 @@ else
 		if [[ "$expectedinput" == *"$cleandebris"* ]]
 		then
 			echo -e "Cleaning up $cleandebris\n"
-                        find $cleandebris/* -mindepth 1 ! \( -name 'urls' -o -name '.gitkeep' \) -exec rm -rf {} \; 2> log/cleanup_err.log 
+                        find $cleandebris -mindepth 1 ! \( -name 'urls' -o -name '.gitkeep' \) -exec rm -rf {} \; 2> log/cleanup_err.log 
                         # Cleanse selectively
         	else
 			echo -e "No cleanup performed\n"
 		fi
+	else
+		echo -e "No cleanup performed\n"
 	fi
 fi

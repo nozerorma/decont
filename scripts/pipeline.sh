@@ -1,7 +1,7 @@
 echo ####### RNA DECONTAMINATION PIPELINE by Miguel Ramón Alonso #######
 
 # Run cleanup script at start
-bash scripts/cleanup.sh 2> log/cleanup_err.log
+bash scripts/cleanup.sh 2>> log/errors.log
 
 set -e
 echo -e "Downloading required files...\n"
@@ -9,20 +9,20 @@ mkdir -p data
 # Download and extract required genomes
 for url in $(grep 'https' data/urls | grep -v 'contaminants' | sort -u)
 do
-        bash scripts/download.sh $url data yes 2> log/download_err.log
+        bash scripts/download.sh $url data yes 2> log/errors.log
 done
 
 url=$(grep 'contaminants' data/urls)
 # Download, extract and filter decontaminants database
-bash scripts/download.sh $url res yes filt 2> log/download_err.log
+bash scripts/download.sh $url res yes filt 2> log/errors.log
 
-echo -e "Building contaminants database index...\n"
-if [ ! "$(ls -A "res/contaminants_idx")" ]
+echo -e "\nBuilding contaminants database index...\n"
+if [ ! "$(ls -A "res/contaminants_idx")" ] 2>> log/errors.log
 then
         # Build contaminants index
         bash scripts/index.sh res/contaminants.fasta res/contaminants_idx
 else
-        echo -e "\nContaminants database index already exists, skipping\n\n"
+        echo -e "Contaminants database index already exists, skipping\n\n"
 fi
 
 mkdir -p out && mkdir -p out/merged
@@ -33,7 +33,8 @@ do
         bash scripts/merge_fastqs.sh data out/merged $sid
 done
 
-if [ ! "$(ls -A "out/trimmed")" ]
+echo -e "\nRemoving adapters...\n"
+if [ ! "$(ls -A "out/trimmed")" ] 2>> log/errors.log 
 then
         mkdir -p out/trimmed && trimDir="out/trimmed"
         mkdir -p log/cutadapt && trimLog="log/cutadapt"
@@ -48,12 +49,11 @@ then
         	echo
 	done
 else
-        echo -e "\nAdapters already trimmed, skipping trimming\n" 
+        echo -e "Adapters already trimmed, skipping trimming\n" 
 fi
 
-# run STAR for all trimmed files
-echo -e "\n\nAligning reads to contaminants. Outputing non-aligned reads...\n"
-if [ ! "$(ls -A "out/star")" ]
+echo -e "\nAligning reads to contaminants. Outputing non-aligned reads...\n"
+if [ ! "$(ls -A "out/star")" ] 2>> log/errors.log 
 then
         mkdir -p out/star/$basenameSid && starDir="out/star"
         for trimSid in $(find $trimDir -name \* -type f)
@@ -66,7 +66,7 @@ then
         	echo
 	done
 else
-        echo -e "\nAlignament already performed, skipping alingment\n"
+        echo -e "Alignament already performed, skipping alingment\n"
 fi
 
 echo -e "\nSaving a common log with information on trimming and alignment results...\n"
