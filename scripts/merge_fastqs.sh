@@ -3,4 +3,4 @@
 sampledir=$1
 outdir=$2
 sampleid=$3
-cat $sampledir/${sampleid}-* >> ${outdir}/${sampleid}
+cat $sampledir/${sampleid}-* >> ${outdir}/${sampleid}.fastq.gz

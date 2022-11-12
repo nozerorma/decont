@@ -1,11 +1,6 @@
 echo ####### RNA DECONTAMINATION PIPELINE by Miguel Ramón Alonso #######
 
-echo "Would you like to remove any remaining files from previous runs? Y/n"
-read removedebris
-if [ $removedebris == "Y" ]
-then
-	find data/* res/* out/* log/* ! \( -name 'urls' -o -name '.gitkeep' \) -exec rm -rf {} \; # cleanse old data excluding gitkeeps and urls
-fi
+bash scripts/cleanup.sh
 
 echo "Downloading required files..."
 echo
@@ -19,8 +14,6 @@ bash scripts/download.sh $url res yes filt # Download, extract and filter decont
 
 if [ ! -d res/contaminants_idx ]
 then
-	echo "Contaminants database index has not been built"
-	echo
 	echo "Building contaminants database index..."
 	echo
 	bash scripts/index.sh res/contaminants.fasta res/contaminants_idx # Build contaminants index
@@ -38,10 +31,22 @@ do
 	bash scripts/merge_fastqs.sh data out/merged $sid # Merge the samples into a single file
 done
 
-# TODO: run cutadapt for all merged files
-# cutadapt -m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed \
-#     -o <trimmed_file> <input_file> > <log_file>
-
+echo "Removing adapters..."
+echo
+mkdir -p out && mkdir -p out/cutadapt && outdir="out/cutadapt"
+mkdir -p log && mkdir -p log/cutadapt && logdir="log/cutadapt"
+if [ ! -d $outdir ] && [ ! -d $logdir ]
+then	
+	for sid in $(find out/merged/ -name \* -type f -exec basename {} .fastq.gz \;)
+	do	
+		echo "Removing adapters from ${sid}"	
+		cutadapt \
+			-m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed \ # Run cutadapt for all merged files
+			-o $outdir/${sid}_trimmed.fastq.gz $sid > $logdir/$sid.log 
+	done
+else
+	echo "Adapters already trimmed, skipping trimming"	
+fi
 # TODO: run STAR for all trimmed files
 #for fname in out/trimmed/*.fastq.gz
 #do
