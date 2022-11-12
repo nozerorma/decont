@@ -10,7 +10,7 @@ fi
 
 if [ $removedebris == "Y" ]
 then
-        find data/* res/* out/* log/* ! \( -name 'urls' -o -name '.gitkeep' \) -exec rm -rf {} \; # Cleanse old data excluding gitkeeps, urls and scripts
+        find data/* res/* out/* log/* ! \( -name 'urls' -o -name '.gitkeep' -o -name '*.log' \) -exec rm -rf {} \; # Cleanse old data excluding gitkeeps, urls and scripts
 fi
 
 
