@@ -1,22 +1,28 @@
 echo ####### RNA DECONTAMINATION PIPELINE by Miguel Ramón Alonso #######
 
-bash scripts/cleanup.sh
+# Run cleanup script at start
+bash scripts/cleanup.sh 2> log/cleanup_err.log 
 
+set -e
 echo "Downloading required files..."
 echo
 mkdir -p data
-for url in $(grep 'https' data/urls | grep -v 'contaminants' | sort -u) # Download and extract required genomes
+# Download and extract required genomes
+for url in $(grep 'https' data/urls | grep -v 'contaminants' | sort -u)
 do
-	bash scripts/download.sh $url data yes
+	bash scripts/download.sh $url data yes 2> log/download_err.log 
 done
-url=$(grep 'contaminants' data/urls)
-bash scripts/download.sh $url res yes filt # Download, extract and filter decontaminants database
 
-if [ ! -d res/contaminants_idx ]
+url=$(grep 'contaminants' data/urls)
+# Download, extract and filter decontaminants database
+bash scripts/download.sh $url res yes filt
+
+if [ ! -d "res/contaminants_idx" ]
 then
 	echo "Building contaminants database index..."
 	echo
-	bash scripts/index.sh res/contaminants.fasta res/contaminants_idx # Build contaminants index
+	# Build contaminants index
+	bash scripts/index.sh res/contaminants.fasta res/contaminants_idx 2> log/index_err.log
 else
 	echo "Contaminants database index already exists, skipping"
 	echo
@@ -28,25 +34,30 @@ for sid in $(find data -name *.fastq -exec basename {} \; | cut -d"-" -f1 | sort
 do
 	echo "Merging $sid sample files together..."
 	echo
-	bash scripts/merge_fastqs.sh data out/merged $sid # Merge the samples into a single file
+	# Merge the samples into a single file
+	bash scripts/merge_fastqs.sh data out/merged $sid 2> log/merged_errlog 
 done
-
 echo "Removing adapters..."
 echo
-mkdir -p out && mkdir -p out/cutadapt && outdir="out/cutadapt"
-mkdir -p log && mkdir -p log/cutadapt && logdir="log/cutadapt"
-if [ ! -d $outdir ] && [ ! -d $logdir ]
+if [ ! -f "out/cutadapt/*" ] && [ ! -f "log/cutadapt/*" ] # Not sure about this, may be better to run nonetheless, not same case as index
 then	
-	for sid in $(find out/merged/ -name \* -type f -exec basename {} .fastq.gz \;)
+	mkdir -p out && mkdir -p out/cutadapt && outdir="out/cutadapt"
+	mkdir -p log && mkdir -p log/cutadapt && logdir="log/cutadapt"
+	for sid in $(find out/merged/ -name \* -type f)
 	do	
+		basenamesid=$(basename $sid .fastq.gz)
 		echo "Removing adapters from ${sid}"	
+		# Run cutadapt for all merged files
 		cutadapt \
-			-m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed \ # Run cutadapt for all merged files
-			-o $outdir/${sid}_trimmed.fastq.gz $sid > $logdir/$sid.log 
+			-m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed \
+			-o $outdir/${basenamesid}_trimmed.fastq.gz $sid > $logdir/$basenamesid.log 
 	done
 else
 	echo "Adapters already trimmed, skipping trimming"	
 fi
+
+echo "############ Pipeline finished at $(date +'%H:%M:%S') ##############"
+
 # TODO: run STAR for all trimmed files
 #for fname in out/trimmed/*.fastq.gz
 #do
