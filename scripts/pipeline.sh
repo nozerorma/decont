@@ -39,34 +39,44 @@ do
 done
 echo "Removing adapters..."
 echo
-if [ ! -f "out/cutadapt/*" ]  # Not sure about this, may be better to run nonetheless, not same case as index
+if [ ! -f "out/cutadapt/*" ]
 then	
-	mkdir -p out && mkdir -p out/cutadapt && outdir="out/cutadapt"
-	mkdir -p log && mkdir -p log/cutadapt && logdir="log/cutadapt"
-	for sid in $(find out/merged/ -name \* -type f)
+	mkdir -p out/trimmed && trimDir="out/trimmed"
+	mkdir -p log/cutadapt && trimLog="log/cutadapt"
+	for sid in $(find out/merged/ -name \* -type f) 
 	do	
-		basenamesid=$(basename $sid .fastq)
+		basenameSid=$(basename $sid .fastq)
 		echo "Removing adapters from ${sid}"	
+		echo
 		# Run cutadapt for all merged files
 		cutadapt \
 			-m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed \
-			-o $outdir/${basenamesid}_trimmed.fastq.gz $sid > $logdir/$basenamesid.log 
+			-o $trimDir/${basenameSid}_trimmed.fastq.gz $sid > $trimLog/$basenameSid.log				
 	done
 else
 	echo "Adapters already trimmed, skipping trimming"	
+	echo
 fi
 
 # run STAR for all trimmed files
-#for fname in out/trimmed/*.fastq.gz
-#do
-    # you will need to obtain the sample ID from the filename
- #   sid=#TODO
-    # mkdir -p out/star/$sid
-    # STAR --runThreadN 4 --genomeDir res/contaminants_idx \
-    #    --outReadsUnmapped Fastx --readFilesIn <input_file> \
-    #    --readFilesCommand gunzip -c --outFileNamePrefix <output_directory>
-# done 
-
+echo "Aligning reads to contaminants. Outputing non-aligned reads..."
+echo
+if [ ! -f "out/star/*" ]  
+then
+	for trimfile in $trimDir/*.fastq.gz
+	do
+		sid=$(basename $trimfile .fastq.gz | cut -d"_" -f-2)
+		mkdir -p out/star/$sid
+		STAR \
+			--runThreadN 4 --genomeDir res/contaminants_idx \
+			--outReadsUnmapped Fastx --readFilesIn $sid \
+			--readFilesCommand gunzip -c --outFileNamePrefix out/star/$sid 
+	done 
+else
+	echo "Alignament already performed, skipping alingment..."
+	echo
+fi
+echo "Saving a common log with information on trimming and alignment results..."
 echo
 echo "############ Pipeline finished at $(date +'%H:%M:%S') ##############"
 
