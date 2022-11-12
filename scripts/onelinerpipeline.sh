@@ -7,14 +7,16 @@ set -e
 echo -e "Downloading required files...\n"
 mkdir -p data
 # Download and extract required genomes
-for url in $(grep 'https' data/urls | grep -v 'contaminants' | sort -u)
-do
-        bash scripts/download.sh $url data yes 2> log/errors.log
-done
+wget -nc -O data/<basename> -i <inputfile> 
 
-url=$(grep 'contaminants' data/urls)
+#for url in $(grep 'https' data/urls | grep -v 'contaminants' | sort -u)
+#do
+	#bash scripts/download.sh $url data yes 2> log/errors.log
+#done
+
+#url=$(grep 'contaminants' data/urls)
 # Download, extract and filter decontaminants database
-bash scripts/download.sh $url res yes filt 2> log/errors.log
+#bash scripts/download.sh $url res yes filt 2> log/errors.log
 
 echo -e "\nBuilding contaminants database index...\n"
 if [ ! "$(ls -A "res/contaminants_idx")" ] 2>> log/errors.log
