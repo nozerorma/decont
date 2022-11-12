@@ -6,7 +6,7 @@ then
         if [[ "${debris}" = *[Yy]* ]]
         then
                 echo -e "\nCleaning everything up...\n"
-                find data/* log/* out/* res/* -mindepth 1! \( -name 'urls' -o -name '.gitkeep' -o -name '*.log' \) -exec rm -rf {} \; 
+                find data log out res -mindepth 1 ! \( -name 'urls' -o -name '.gitkeep' -o -name '*.log' \) -exec rm -rf {} \; 
 		# Exclude gitkeeps, urls, scripts and logs 
 	fi
 else
