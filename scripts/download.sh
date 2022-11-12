@@ -14,7 +14,7 @@ then
 	cd $directoryurl
 	curl ${downloadurl}.md5 | md5sum -c --ignore-missing > verifiedmd5.tmp
 	echo
-	if [ grep OK *.tmp ]
+	if grep OK *.tmp 
 	then
         	echo "Genome integrity verified"
         	echo
@@ -23,7 +23,10 @@ then
 	else
 		echo "Download integrity could not be verified. Aborting..."
 		echo
+		cd ..
 		bash scripts/cleanup.sh Y
+		echo "############ Pipeline failed at $(date +'%H:%M:%S') ##############"
+		echo
 		exit 1
 	fi
 	
