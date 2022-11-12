@@ -9,15 +9,15 @@ mkdir -p data
 # Download and extract required genomes
 for url in $(grep 'https' data/urls | grep -v 'contaminants' | sort -u)
 do
-        bash scripts/download.sh $url data yes 2> log/errors.log
+        bash scripts/download.sh $url data yes 2>> log/errors.log
 done
 
 url=$(grep 'contaminants' data/urls)
 # Download, extract and filter decontaminants database
-bash scripts/download.sh $url res yes filt 2> log/errors.log
+bash scripts/download.sh $url res yes filt 2>> log/errors.log
 
 echo -e "\nBuilding contaminants database index...\n"
-if [ ! "$(ls -A "res/contaminants_idx")" ] 2>> log/errors.log
+if [ ! "$(ls -A "res/contaminants_idx" 2>> log/errors.log)" ]
 then
         # Build contaminants index
         bash scripts/index.sh res/contaminants.fasta res/contaminants_idx
@@ -34,7 +34,7 @@ do
 done
 
 echo -e "\nRemoving adapters...\n"
-if [ ! "$(ls -A "out/trimmed")" ] 2>> log/errors.log 
+if [ ! "$(ls -A "out/trimmed" 2>> log/errors.log)" ] 
 then
         mkdir -p out/trimmed && trimDir="out/trimmed"
         mkdir -p log/cutadapt && trimLog="log/cutadapt"
@@ -53,7 +53,7 @@ else
 fi
 
 echo -e "\nAligning reads to contaminants. Outputing non-aligned reads...\n"
-if [ ! "$(ls -A "out/star")" ] 2>> log/errors.log 
+if [ ! "$(ls -A "out/star" 2>> log/errors.log)" ] 
 then
         mkdir -p out/star/$basenameSid && starDir="out/star"
         for trimSid in $(find $trimDir -name \* -type f)
@@ -91,6 +91,5 @@ do
 		awk -v OFS=' ' '{$1=$1}1' >> pipeline.log
         echo >> pipeline.log
 done
-
 
 echo -e "\n############ Pipeline finished at $(date +'%H:%M:%S') ##############\n"
