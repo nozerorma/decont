@@ -32,7 +32,7 @@ do
         # Merge the samples into a single file
         bash scripts/merge_fastqs.sh data out/merged $sid
 done
-echo -e "Removing adapters...\n"
+
 if [ ! "$(ls -A "out/trimmed")" ]
 then
         mkdir -p out/trimmed && trimDir="out/trimmed"
@@ -40,18 +40,19 @@ then
         for sid in $(find out/merged/ -name \* -type f)
         do
                 basenameSid=$(basename $sid .fastq)
-                echo -e "Removing adapters from ${sid}\n"
+                echo -e "\nRemoving adapters from ${basenameSid}\n"
                 # Run cutadapt for all merged files
                 cutadapt \
                         -m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed \
                         -o $trimDir/${basenameSid}_trimmed.fastq.gz $sid > $trimLog/$basenameSid.log
-        done
+        	echo
+	done
 else
         echo -e "\nAdapters already trimmed, skipping trimming\n" 
 fi
 
 # run STAR for all trimmed files
-echo -e "Aligning reads to contaminants. Outputing non-aligned reads...\n"
+echo -e "\n\nAligning reads to contaminants. Outputing non-aligned reads...\n"
 if [ ! "$(ls -A "out/star")" ]
 then
         mkdir -p out/star/$basenameSid && starDir="out/star"
@@ -62,7 +63,8 @@ then
                         --runThreadN 4 --genomeDir res/contaminants_idx \
                         --outReadsUnmapped Fastx --readFilesIn $trimSid \
                         --readFilesCommand gunzip -c --outFileNamePrefix $starDir/$basenameSid/
-        done
+        	echo
+	done
 else
         echo -e "\nAlignament already performed, skipping alingment\n"
 fi
