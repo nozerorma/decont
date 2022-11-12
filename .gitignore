@@ -8,4 +8,5 @@ data/*
 !data/urls
 log/*
 !log/.gitkeep
+scripts/*.swp
 scripts/pipelineonelinerwget.sh
