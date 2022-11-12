@@ -15,14 +15,14 @@ done
 
 url=$(grep 'contaminants' data/urls)
 # Download, extract and filter decontaminants database
-bash scripts/download.sh $url res yes filt
+bash scripts/download.sh $url res yes filt 2> log/download_err.log
 
-if [ ! -d "res/contaminants_idx" ]
+if [ ! -f "res/contaminants_idx/*" ]
 then
 	echo "Building contaminants database index..."
 	echo
 	# Build contaminants index
-	bash scripts/index.sh res/contaminants.fasta res/contaminants_idx 2> log/index_err.log
+	bash scripts/index.sh res/contaminants.fasta res/contaminants_idx 
 else
 	echo "Contaminants database index already exists, skipping"
 	echo
@@ -35,17 +35,17 @@ do
 	echo "Merging $sid sample files together..."
 	echo
 	# Merge the samples into a single file
-	bash scripts/merge_fastqs.sh data out/merged $sid 2> log/merged_errlog 
+	bash scripts/merge_fastqs.sh data out/merged $sid  
 done
 echo "Removing adapters..."
 echo
-if [ ! -f "out/cutadapt/*" ] && [ ! -f "log/cutadapt/*" ] # Not sure about this, may be better to run nonetheless, not same case as index
+if [ ! -f "out/cutadapt/*" ]  # Not sure about this, may be better to run nonetheless, not same case as index
 then	
 	mkdir -p out && mkdir -p out/cutadapt && outdir="out/cutadapt"
 	mkdir -p log && mkdir -p log/cutadapt && logdir="log/cutadapt"
 	for sid in $(find out/merged/ -name \* -type f)
 	do	
-		basenamesid=$(basename $sid .fastq.gz)
+		basenamesid=$(basename $sid .fastq)
 		echo "Removing adapters from ${sid}"	
 		# Run cutadapt for all merged files
 		cutadapt \
@@ -56,9 +56,7 @@ else
 	echo "Adapters already trimmed, skipping trimming"	
 fi
 
-echo "############ Pipeline finished at $(date +'%H:%M:%S') ##############"
-
-# TODO: run STAR for all trimmed files
+# run STAR for all trimmed files
 #for fname in out/trimmed/*.fastq.gz
 #do
     # you will need to obtain the sample ID from the filename
@@ -68,6 +66,9 @@ echo "############ Pipeline finished at $(date +'%H:%M:%S') ##############"
     #    --outReadsUnmapped Fastx --readFilesIn <input_file> \
     #    --readFilesCommand gunzip -c --outFileNamePrefix <output_directory>
 # done 
+
+echo
+echo "############ Pipeline finished at $(date +'%H:%M:%S') ##############"
 
 # TODO: create a log file containing information from cutadapt and star logs
 # (this should be a single log file, and information should be *appended* to it on each run)
