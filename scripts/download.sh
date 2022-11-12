@@ -21,9 +21,9 @@ then
         	rm *.tmp
         	cd ..
 	else
-		echo "Download integrity could not be verified"
+		echo "Download integrity could not be verified. Aborting..."
 		echo
-		rm *.tmp
+		bash scripts/cleanup.sh Y
 		exit 1
 	fi
 	
