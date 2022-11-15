@@ -11,7 +11,7 @@ mkdir -p data
 
 # Download and extract required genomes
 
-for url in $(grep 'https' data/urls | grep -v 'contaminants' | sort -u)
+for url in $(grep '^data' data/urls | cut -d$'\t' -f2 | sort -u)
 do
         bash scripts/download.sh $url data yes 2>> log/errors.log
 done
@@ -19,7 +19,7 @@ done
 
 # Download, extract and filter decontaminants database
 
-url=$(grep 'contaminants' data/urls)
+url=$(grep '^contaminants' data/urls | cut -d$'\t' -f2)
 bash scripts/download.sh $url res yes filt 2>> log/errors.log
 
 
@@ -99,13 +99,13 @@ echo >> pipeline.log
 for basenameSid in $(find out/trimmed -name \* -type f -exec basename {} .fastq.gz \; | cut -d"_" -f-2)
 do
         echo -e "$basenameSid STAR analysis\n" >> pipeline.log
-        grep -E 'Uniquely mapped reads % | % of reads mapped to too many loci | % of reads mapped to multiple loci' \
+        grep -E 'Uniquely mapped reads %|% of reads mapped to too many loci|% of reads mapped to multiple loci' \
 		out/star/$basenameSid/Log.final.out | \
 		awk -v OFS=' ' '{$1=$1}1' >> pipeline.log
 	echo >> pipeline.log
 	
 	echo -e "$basenameSid cutadapt analysis\n" >> pipeline.log
-        grep 'Reads with adapters | Total basepairs' log/cutadapt/$basenameSid.log | \
+        grep -E 'Reads with adapters|Total basepairs' log/cutadapt/$basenameSid.log | \
 		awk -v OFS=' ' '{$1=$1}1' >> pipeline.log
         echo >> pipeline.log
 done
