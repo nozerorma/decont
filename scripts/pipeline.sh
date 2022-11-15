@@ -93,22 +93,23 @@ fi
 
 echo -e "\nSaving a common log with information on trimming and alignment results...\n"
 
-echo -e "\nGlobal log input as of $(date +'%x                %H:%M:%S')\n" >> pipeline.log
-echo >> pipeline.log
+echo -e "\nCommon log input as of $(date +'%x                %H:%M:%S')" >> pipeline.log
+echo -e "___________________________________________________________\n">> pipeline.log
 
 for basenameSid in $(find out/trimmed -name \* -type f -exec basename {} .fastq.gz \; | cut -d"_" -f-2)
 do
-        echo -e "$basenameSid STAR analysis\n" >> pipeline.log
+        echo -e "$basenameSid STAR analysis\n" | sed $'s/^/\t /' >> pipeline.log
         grep -E 'Uniquely mapped reads %|% of reads mapped to too many loci|% of reads mapped to multiple loci' \
 		out/star/$basenameSid/Log.final.out | \
-		awk -v OFS=' ' '{$1=$1}1' >> pipeline.log
+		awk -v OFS=' ' '{$1=$1}1' | sed $'s/^/\t\t- /;s/ |/:/g' | column -t -s: -o$'\t\t' >> pipeline.log
 	echo >> pipeline.log
 	
-	echo -e "$basenameSid cutadapt analysis\n" >> pipeline.log
+	echo -e "$basenameSid cutadapt analysis\n" | sed $'s/^/\t/' >> pipeline.log
         grep -E 'Reads with adapters|Total basepairs' log/cutadapt/$basenameSid.log | \
-		awk -v OFS=' ' '{$1=$1}1' >> pipeline.log
-        echo >> pipeline.log
+		awk -v OFS=' ' '{$1=$1}1' | sed $'s/^/\t\t- /' | column -t -s: -o$'\t\t\t' >> pipeline.log
+        echo -e "\n\n" >> pipeline.log
 done
 
+echo -e "\nCommon log saved in /pipeline.log\n" 
 
 echo -e "\n############ Pipeline finished at $(date +'%H:%M:%S') ##############\n"
