@@ -12,8 +12,8 @@ do
         bash scripts/download.sh $url data yes 2>> log/errors.log
 done
 
-url=$(grep 'contaminants' data/urls)
 # Download, extract and filter decontaminants database
+url=$(grep 'contaminants' data/urls)
 bash scripts/download.sh $url res yes filt 2>> log/errors.log
 
 echo -e "\nBuilding contaminants database index...\n"
