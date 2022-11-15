@@ -16,7 +16,7 @@ then
 # Works both as standalone cleanup script and interactive startup cleanup script
 
 else
-        echo -e "Would you like to remove any remaining files from previous runs? Y/n\n"
+        echo -e "Would you like to remove any remaining files from previous runs? <Y>/<n>\n"
         read debris
         echo
 	
@@ -24,7 +24,7 @@ else
         then
                 # Cleanup selectively
 	
-		echo -e "Which files would you like to remove? data log out res\n"
+		echo -e "Which files would you like to remove? <data> <log> <out> <res>\n"
                 read cleandebris
                 expectedinput="data log out res"
 		echo
