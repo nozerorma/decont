@@ -60,7 +60,7 @@ then
                 # Run cutadapt for all merged files
                 cutadapt \
                         -m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed \
-                        -o $trimDir/${basenameSid}_trimmed.fastq.gz $sid > $trimLog/$basenameSid.log
+                        -o $trimDir/${basenameSid}_trimmed.fastq $sid > $trimLog/$basenameSid.log
         	echo
 	done
 else
@@ -77,11 +77,11 @@ then
         mkdir -p out/star/$basenameSid && starDir="out/star"
         for trimSid in $(find $trimDir -name \* -type f)
         do
-                basenameSid=$(basename $trimSid .fastq.gz | cut -d"_" -f-2)
+                basenameSid=$(basename $trimSid .fastq | cut -d"_" -f-2)
                 STAR \
                         --runThreadN 6 --genomeDir res/contaminants_idx \
                         --outReadsUnmapped Fastx --readFilesIn $trimSid \
-                        --readFilesCommand gunzip -c --outFileNamePrefix $starDir/$basenameSid/
+                        --outFileNamePrefix $starDir/$basenameSid/
         	echo
 	done
 else
