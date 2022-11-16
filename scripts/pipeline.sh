@@ -47,7 +47,7 @@ done
 
 # Cutadapt trimming step
 
-echo -e "\nRemoving adapters...\n"
+echo -e "\nRemoving adapters..."
 
 if [ ! "$(ls -A "out/trimmed" 2>> log/errors.log)" ] 
 then
