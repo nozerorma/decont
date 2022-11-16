@@ -79,7 +79,7 @@ then
         do
                 basenameSid=$(basename $trimSid .fastq.gz | cut -d"_" -f-2)
                 STAR \
-                        --runThreadN 4 --genomeDir res/contaminants_idx \
+                        --runThreadN 6 --genomeDir res/contaminants_idx \
                         --outReadsUnmapped Fastx --readFilesIn $trimSid \
                         --readFilesCommand gunzip -c --outFileNamePrefix $starDir/$basenameSid/
         	echo
