@@ -1,8 +1,8 @@
 #### CLEANUP SCRIPT ####
 
 echo -e "\nRunning cleanup script...\n"
-echo -e "\n######		Please, make sure you are runnning this script either from the main pipeline script or from the WD ($ bash scripts/cleanup.sh).\n
-DO NOT RUN IT FROM ANY OTHER PLACE, ELSE NO RESPONSABILITY WILL BE TAKEN FOR ANY DAMAGE IT MAY CAUSE	######\n"
+echo -e "\n	###### Please, make sure you are runnning this script either from the main pipeline script or from the WD ($ bash scripts/cleanup.sh). ######\n
+		        ###### DO NOT RUN IT FROM ANY OTHER PLACE, ELSE NO RESPONSABILITY WILL BE TAKEN FOR ANY DAMAGE IT MAY CAUSE ######\n"
 
 # Rollback funciton commented out as it may no be recommended in some cases
 # if [ $# -eq 1 ] 
