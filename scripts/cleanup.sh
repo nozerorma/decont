@@ -2,23 +2,23 @@
 
 echo -e "\nRunning cleanup script...\n"
 echo -e "\n######		Please, make sure you are runnning this script either from the main pipeline script or from the WD ($ bash scripts/cleanup.sh).\n
-DO NOT RUN IT FROM ANY OTHER PLACE, ELSE I WILL NOT TAKE RESPONSABILITY FOR ANY DAMAGE IT MAY CAUSE	######\n"
-if [ $# -eq 1 ] 
-then
-        # Works mainly as rollback script when certain situations do not comply
-	
-	debris=$1
-        
-	if [[ "${debris}" = *[Yy]* ]]
-        then
-                echo -e "\nCleaning everything up...\n"
-                find data log out res -mindepth 1 ! \( -name 'urls' -o -name '.gitkeep' -o -name '*.log' \) -exec rm -rf {} \; 
+DO NOT RUN IT FROM ANY OTHER PLACE, ELSE NO RESPONSABILITY WILL BE TAKEN FOR ANY DAMAGE IT MAY CAUSE	######\n"
+
+# Rollback funciton commented out as it may no be recommended in some cases
+# if [ $# -eq 1 ] 
+# then
+	# Works mainly as rollback script when certain situations do not comply
+	# debris=$1
+	# if [[ "${debris}" = *[Yy]* ]]
+	# then
+		# echo -e "\nCleaning everything up...\n"
+		# find data log out res -mindepth 1 ! \( -name 'urls' -o -name '.gitkeep' -o -name '*.log' \) -exec rm -rf {} \; 
 		# Exclude gitkeeps, urls, scripts and logs 
-	fi
+	# fi
 
 # Works both as standalone cleanup script and interactive startup cleanup script
 
-else
+# else
         echo -e "Would you like to remove any remaining files from previous runs? <Y>/<n>\n"
         read debris
         echo
@@ -42,4 +42,4 @@ else
 	else
 		echo -e "No cleanup performed\n"
 	fi
-fi
+# fi
