@@ -3,7 +3,7 @@ echo ####### RNA DECONTAMINATION PIPELINE by Miguel Ramón Alonso #######
 # Run cleanup script at start
 bash scripts/cleanup.sh 2>> log/errors.log
 
-set -e
+#set -e
 
 echo -e "Downloading required files...\n"
 mkdir -p data
