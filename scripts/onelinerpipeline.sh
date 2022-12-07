@@ -4,30 +4,56 @@ echo ####### RNA DECONTAMINATION PIPELINE by Miguel Ramón Alonso #######
 bash scripts/cleanup.sh 2>> log/errors.log
 
 set -e
+
 echo -e "Downloading required files...\n"
 mkdir -p data
+
+
 # Download and extract required genomes
-wget -nc -O data/<basename> -i <inputfile> 
 
-#for url in $(grep 'https' data/urls | grep -v 'contaminants' | sort -u)
-#do
-	#bash scripts/download.sh $url data yes 2> log/errors.log
-#done
+echo -e "Veryfing download integrity...\n" # md5sum verification
+for downloadurl in $(grep '^data' data/urls | cut -d$'\t' -f2 | sort -u) 
+do	
+	cd data
+	sampleid=$(basename $downloadurl)
+	wget -nc -O $sampleid $downloadurl
+	curl ${downloadurl}.md5 | md5sum -c --ignore-missing > verifiedmd5.tmp
+       	if grep OK *.tmp
+       	then
+               	echo -e "Download integrity verified\n"
+               	rm *.tmp
+       	else
+               	echo -e "Download integrity could not be verified. Aborting...\n"
+               	# Rollback function commented out as it may not be recommendable. See cleanup.sh.
+               	# bash scripts/cleanup.sh Y
+               	cd ..
+		echo -e "\n############ Pipeline failed at $(date +'%H:%M:%S') ##############\n"
+               	exit 1
+       	fi
+	cd ..
+done
+gunzip -fkr data 
+# download, extract and filter decontaminants database
 
-#url=$(grep 'contaminants' data/urls)
-# Download, extract and filter decontaminants database
-#bash scripts/download.sh $url res yes filt 2> log/errors.log
+url=$(grep '^contaminants' data/urls | cut -d$'\t' -f2)
 
-echo -e "\nBuilding contaminants database index...\n"
-if [ ! "$(ls -A "res/contaminants_idx")" ] 2>> log/errors.log
+bash scripts/download.sh $url res yes filt 2>> log/errors.log
+
+
+# star index building
+
+echo -e "\nbuilding contaminants database index...\n"
+
+if [ ! "$(ls -a "res/contaminants_idx" 2>> log/errors.log)" ]
 then
-        # Build contaminants index
+        # build contaminants index
         bash scripts/index.sh res/contaminants.fasta res/contaminants_idx
 else
-        echo -e "Contaminants database index already exists, skipping\n\n"
+        echo -e "contaminants database index already exists, skipping\n\n"
 fi
 
 mkdir -p out && mkdir -p out/merged
+
 for sid in $(find data -name *.fastq -exec basename {} \; | cut -d"-" -f1 | sort -u)
 do
         echo -e "Merging $sid sample files together...\n"
@@ -35,8 +61,12 @@ do
         bash scripts/merge_fastqs.sh data out/merged $sid
 done
 
-echo -e "\nRemoving adapters...\n"
-if [ ! "$(ls -A "out/trimmed")" ] 2>> log/errors.log 
+
+# Cutadapt trimming step
+
+echo -e "\nRemoving adapters..."
+
+if [ ! "$(ls -A "out/trimmed" 2>> log/errors.log)" ] 
 then
         mkdir -p out/trimmed && trimDir="out/trimmed"
         mkdir -p log/cutadapt && trimLog="log/cutadapt"
@@ -47,52 +77,56 @@ then
                 # Run cutadapt for all merged files
                 cutadapt \
                         -m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed \
-                        -o $trimDir/${basenameSid}_trimmed.fastq.gz $sid > $trimLog/$basenameSid.log
+                        -o $trimDir/${basenameSid}_trimmed.fastq $sid > $trimLog/$basenameSid.log
         	echo
 	done
 else
         echo -e "Adapters already trimmed, skipping trimming\n" 
 fi
 
+
+# STAR alignment step
+
 echo -e "\nAligning reads to contaminants. Outputing non-aligned reads...\n"
-if [ ! "$(ls -A "out/star")" ] 2>> log/errors.log 
+
+if [ ! "$(ls -A "out/star" 2>> log/errors.log)" ] 
 then
         mkdir -p out/star/$basenameSid && starDir="out/star"
         for trimSid in $(find $trimDir -name \* -type f)
         do
-                basenameSid=$(basename $trimSid .fastq.gz | cut -d"_" -f-2)
+                basenameSid=$(basename $trimSid .fastq | cut -d"_" -f-2)
                 STAR \
-                        --runThreadN 4 --genomeDir res/contaminants_idx \
+                        --runThreadN 6 --genomeDir res/contaminants_idx \
                         --outReadsUnmapped Fastx --readFilesIn $trimSid \
-                        --readFilesCommand gunzip -c --outFileNamePrefix $starDir/$basenameSid/
+                        --outFileNamePrefix $starDir/$basenameSid/
         	echo
 	done
 else
         echo -e "Alignament already performed, skipping alingment\n"
 fi
 
+
+# Saving common log
+
 echo -e "\nSaving a common log with information on trimming and alignment results...\n"
 
-# I don't like this approach, search alt
-echo -e "\nGlobal log input as of $(date +'%x                %H:%M:%S')\n" >> pipeline.log
-echo >> pipeline.log
+echo -e "\nCommon log input as of $(date +'%x                %H:%M:%S')" >> pipeline.log
+echo -e "___________________________________________________________\n">> pipeline.log
+
 for basenameSid in $(find out/trimmed -name \* -type f -exec basename {} .fastq.gz \; | cut -d"_" -f-2)
 do
-        echo -e "$basenameSid STAR analysis\n" >> pipeline.log
-        grep 'Uniquely mapped reads %' out/star/$basenameSid/Log.final.out | \
-		awk -v OFS=' ' '{$1=$1}1' >> pipeline.log
-        grep '% of reads mapped to too many loci' out/star/$basenameSid/Log.final.out | \
-		awk -v OFS=' ' '{$1=$1}1' >> pipeline.log
-        grep '% of reads mapped to multiple loci' out/star/$basenameSid/Log.final.out | \
-		awk -v OFS=' ' '{$1=$1}1' >> pipeline.log
+        echo -e "$basenameSid STAR analysis\n" | sed $'s/^/\t /' >> pipeline.log
+        grep -E 'Uniquely mapped reads %|% of reads mapped to too many loci|% of reads mapped to multiple loci' \
+		out/star/$basenameSid/Log.final.out | \
+		awk -v OFS=' ' '{$1=$1}1' | sed $'s/^/\t\t- /;s/ |/:/g' | column -t -s: -o$'\t\t' >> pipeline.log
 	echo >> pipeline.log
-	echo -e "$basenameSid cutadapt analysis\n" >> pipeline.log
-        grep 'Reads with adapters' log/cutadapt/$basenameSid.log | \
-		awk -v OFS=' ' '{$1=$1}1' >> pipeline.log
-        grep 'Total basepairs' log/cutadapt/$basenameSid.log | \
-		awk -v OFS=' ' '{$1=$1}1' >> pipeline.log
-        echo >> pipeline.log
+	
+	echo -e "$basenameSid cutadapt analysis\n" | sed $'s/^/\t/' >> pipeline.log
+        grep -E 'Reads with adapters|Total basepairs' log/cutadapt/$basenameSid.log | \
+		awk -v OFS=' ' '{$1=$1}1' | sed $'s/^/\t\t- /' | column -t -s: -o$'\t\t\t' >> pipeline.log
+        echo -e "\n\n" >> pipeline.log
 done
 
+echo -e "\nCommon log saved in /pipeline.log\n" 
 
 echo -e "\n############ Pipeline finished at $(date +'%H:%M:%S') ##############\n"
