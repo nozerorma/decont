@@ -71,6 +71,7 @@ fi
 # STAR alignment step
 
 echo -e "\nAligning reads to contaminants. Outputing non-aligned reads...\n"
+echo -e "\n### Default thread number set to 6, please modify if neccessary###\n" 
 
 if [ ! "$(ls -A "out/star" 2>> log/errors.log)" ] 
 then
@@ -98,6 +99,7 @@ echo -e "___________________________________________________________\n">> pipeli
 
 for basenameSid in $(find out/trimmed -name \* -type f -exec basename {} .fastq.gz \; | cut -d"_" -f-2)
 do
+	# parameter -o not present in bsdmain column ver
 	if [[ $(dpkg -S $(which column) | grep bsdmain) == *[bsdmainutils]* ]]
 	then	
 	        echo -e "$basenameSid STAR analysis\n" | sed $'s/^/\t /' >> pipeline.log
