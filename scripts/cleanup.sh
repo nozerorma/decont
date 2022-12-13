@@ -40,6 +40,6 @@ echo -e "\n	###### Please, make sure you are runnning this script either from th
 			echo -e "No cleanup performed\n"
 		fi
 	else
-		echo -e "No cleanup performed\n"
+		echo -e "No cleanup performed\n\n"
 	fi
 # fi
