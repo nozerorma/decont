@@ -108,7 +108,7 @@ do
 	if [[ $(dpkg -S $(which column) | grep bsdmain) == *[bsdmainutils]* ]]
 	then	
 	        echo -e "$basenameSid STAR analysis\n" | sed $'s/^/\t /' >> pipeline.log
-		grep -E 'Uniquely mapped reads %|% of reads mapped to too many loci|% of reads mapped to multiple loci' \
+		grep -E 'reads %|% of reads mapped to (too|multiple)' \
 			out/star/$basenameSid/Log.final.out | \
 			awk -v OFS=' ' '{$1=$1}1' | sed $'s/^/\t\t- /;s/ |/:/g' | column -t -s:  >> pipeline.log
 		echo >> pipeline.log
@@ -118,7 +118,7 @@ do
 		echo -e "\n\n" >> pipeline.log
 	else
 		echo -e "$basenameSid STAR analysis\n" | sed $'s/^/\t /' >> pipeline.log
-                grep -E 'Uniquely mapped reads %|% of reads mapped to too many loci|% of reads mapped to multiple loci' \
+                grep -E 'reads %|% of reads mapped to (too|multiple)' \
                         out/star/$basenameSid/Log.final.out | \
                         awk -v OFS=' ' '{$1=$1}1' | sed $'s/^/\t\t- /;s/ |/:/g' | column -t -s: -o$'\t\t' >> pipeline.log
                 echo >> pipeline.log
