@@ -31,7 +31,7 @@ bash scripts/download.sh $url res yes filt 2>> log/errors.log
 
 echo -e "\nBuilding contaminants database index...\n"
 
-if [ ! "$(ls -A "res/contaminants_idx" 2>> log/errors.log)" ]
+if [ ! "$(ls -A "res/contaminants_idx" 2>> log/errors.log)" ] # verify resources directory is empty
 then
         # Build contaminants index
         bash scripts/index.sh res/contaminants.fasta res/contaminants_idx
@@ -54,7 +54,7 @@ done
 
 echo -e "\nRemoving adapters..."
 
-if [ ! "$(ls -A "out/trimmed" 2>> log/errors.log)" ] 
+if [ ! "$(ls -A "out/trimmed" 2>> log/errors.log)" ] # verify if trimmed directory is empty
 then
         mkdir -p out/trimmed && trimDir="out/trimmed"
         mkdir -p log/cutadapt && trimLog="log/cutadapt"
@@ -78,7 +78,7 @@ fi
 echo -e "\nAligning reads to contaminants. Outputing non-aligned reads...\n"
 echo -e "\n### Default number of threads set to 6, please modify if neccessary ###\n" 
 
-if [ ! "$(ls -A "out/star" 2>> log/errors.log)" ] 
+if [ ! "$(ls -A "out/star" 2>> log/errors.log)" ] # verify star directory is empty
 then
         mkdir -p out/star/$basenameSid && starDir="out/star"
         for trimSid in $(find $trimDir -name \* -type f)
