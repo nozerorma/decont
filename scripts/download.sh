@@ -34,7 +34,10 @@ then
 		sampleid=$(basename $downloadurl .gz)
 		mv $directoryurl/$sampleid $directoryurl/unfiltered_$sampleid
 		awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' $directoryurl/unfiltered_$sampleid | \
-		grep -vw 'small nuclear' $directoryurl/unfiltered_$sampleid > $directoryurl/$sampleid	
+		grep -vw 'small nuclear' $directoryurl/unfiltered_$sampleid > $directoryurl/$sampleid
+		
+		# other possibility would be to use seqkit grep funciton
+		# seqkit grep -vrnp '.*small nuclear.*' $directoryurl/unfiltered_$sampleid > $directoryurl/$sampleid	
 	fi
 
 else
