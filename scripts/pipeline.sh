@@ -1,9 +1,13 @@
 echo ####### RNA DECONTAMINATION PIPELINE by Miguel Ramón Alonso #######
+echo -e "\n\n\n############ Pipeline started at $(date +'%H:%M:%S') ##############\n\n\n"
+
 
 # Run cleanup script at start
 bash scripts/cleanup.sh 2>> log/errors.log
 
+# Stop execution when having a non-zero status and trap errors giving line number
 set -e
+trap 'echo Error at about $LINENO' ERR
 
 echo -e "Downloading required files...\n"
 mkdir -p data
@@ -37,6 +41,7 @@ fi
 
 mkdir -p out && mkdir -p out/merged
 
+# Merge part samples in whole 
 for sid in $(find data -name *.fastq -exec basename {} \; | cut -d"-" -f1 | sort -u)
 do
         echo -e "Merging $sid sample files together...\n"
@@ -126,4 +131,4 @@ done
 
 echo -e "\nCommon log saved in /pipeline.log\n" 
 
-echo -e "\n############ Pipeline finished at $(date +'%H:%M:%S') ##############\n"
+echo -e "\n\n\n############ Pipeline finished at $(date +'%H:%M:%S') ##############\n"
