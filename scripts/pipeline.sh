@@ -71,7 +71,7 @@ fi
 # STAR alignment step
 
 echo -e "\nAligning reads to contaminants. Outputing non-aligned reads...\n"
-echo -e "\n### Default thread number set to 6, please modify if neccessary###\n" 
+echo -e "\n### Default number of threads set to 6, please modify if neccessary ###\n" 
 
 if [ ! "$(ls -A "out/star" 2>> log/errors.log)" ] 
 then
