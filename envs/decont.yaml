@@ -9,4 +9,8 @@ dependencies:
   - cutadapt
   - star
   - multiqc
+  - seqkit
+  - ca-certificates
+  - certifi
+  - openssl
 prefix: /home/vant/mambaforge/envs/decont
