@@ -7,7 +7,7 @@ bash scripts/cleanup.sh 2>> log/errors.log
 
 # Stop execution when having a non-zero status and trap errors giving line number
 set -e
-trap 'echo Error at about $LINENO' ERR
+trap 'echo Error at about $LINENO' ERR # credits to @NoeRzPz
 
 echo -e "Downloading required files...\n"
 mkdir -p data
