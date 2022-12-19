@@ -27,7 +27,11 @@ echo -e "\n	###### Please, make sure you are runnning this script either from th
         then
                 # Cleanup selectively
 	
-		echo -e "Which files would you like to remove? <data> <log> <out> <res>\n"
+		echo -e "Which files would you like to remove? <data> <log> <out> <res>\n \
+			Note that desired directories must be input manually and separated by spaces.\n \
+			ie. data out res \n \
+			Git integrity, urls and directory structure will be preserved.\n"
+				
                 read cleandebris
                 expectedinput="data log out res"
 		echo
