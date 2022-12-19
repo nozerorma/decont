@@ -40,16 +40,16 @@ do
                 		find $cleandebris -mindepth 1 ! \( -name 'urls' -o -name '.gitkeep' \) -exec rm -rf {} \; 2> log/cleanup_err.log 
         			echo -e "Done\n"
 			else
-				echo -e "No cleanup performed\n"
+				echo -e "No cleanup performed.\n\n"
 			fi ;
 		break ;;
 	
 		[Nn]* )
-			echo -e "No cleanup performed\n" ;
+			echo -e "No cleanup performed.\n\n" ;
 		break ;;
 			
 		* )
-			echo -e "Please answer Y or N\n" ;
+			echo -e "Please, answer Y or N.\n" ;
 		;;
 	esac
 done

@@ -32,5 +32,5 @@ do
         fi
 done
 
-echo -e "\nCommon log saved in /pipeline.log\n" 
+echo -e "Common log saved in /pipeline.log\n" 
 

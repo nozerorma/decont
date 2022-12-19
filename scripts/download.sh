@@ -8,12 +8,12 @@ then
         echo -e "Downloading $sampleid ...\n"
 	wget -nc -O $directoryurl/$sampleid $downloadurl 
 	
-	echo -e "Veryfing download integrity...\n" # md5sum verification
+	echo -e "Veryfing download integrity..." # md5sum verification
 	cd $directoryurl
 	curl ${downloadurl}.md5 | md5sum -c --ignore-missing > verifiedmd5.tmp
 	if grep OK *.tmp 
 	then
-        	echo -e "Download integrity verified\n"
+        	echo -e "Download integrity verified\n\n"
         	rm *.tmp
         	cd ..
 	else
@@ -32,16 +32,18 @@ then
 	# File extraction is not really neccessary in the case of our samples, as bioinformatic software in use is able to 
 	# work as well with fastq.gz as it does with its unpacked variant. Thus, it was only performed for reasearch and learning. 
 	
-	gunzip -fk $directoryurl/$sampleid 
+	gunzip -fk $directoryurl/$sampleid
+	echo -e "Done\n\n"
 	
 	if [ "$4" == "filt" ] # Filter small nuclear sequences
 	then
-		echo -e "\nRemoving small nuclear sequences from contaminants database...\n"
+		echo -e "Removing small nuclear sequences from contaminants database...\n"
 		sampleid=$(basename $downloadurl .gz)
 		mv $directoryurl/$sampleid $directoryurl/unfiltered_$sampleid
 		
 		seqkit grep -vrnp '.*small nuclear.*' $directoryurl/unfiltered_$sampleid > $directoryurl/$sampleid	
-		
+		echo -e "Done\n"
+				
 		# Another possibility could be to use an awk program in order to pre-process the fasta file, followed by reverse grep. 
 		# This may not be the best solution, as it could mess with the FASTA file structure, thus becoming illegible for
 	       	# other bioinformatic software.	
