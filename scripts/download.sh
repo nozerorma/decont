@@ -20,9 +20,6 @@ then
 		echo -e "Download integrity could not be verified. Aborting...\n"
 		cd ..
 		
-		# Rollback function commented out as it may not be recommendable. See cleanup.sh.
-		# bash scripts/cleanup.sh Y
-
 		echo -e "\n############ Pipeline failed at $(date +'%H:%M:%S') ##############\n"
 		exit 1
 	fi
