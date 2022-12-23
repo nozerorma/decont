@@ -6,7 +6,7 @@ res/*
 !res/.gitkeep
 data/*
 !data/.gitkeep
-!data/urls
+!data/urls*
 log/*
 !log/.gitkeep
 scripts/*.swp
