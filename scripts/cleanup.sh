@@ -6,8 +6,8 @@ echo -e "\n	###### Please, make sure you are runnning this script either from th
 
 while true 
 do
-	read -r -p "Would you like to remove any remaining files from previous runs? (Y/N): " doCleanup
-	case $doCleanup in
+	read -r -p "Would you like to remove any remaining files from previous runs? (Y/N): " cleanup
+	case $cleanup in
 		[Yy]* )
     			# Cleanup selectively
 	
@@ -38,4 +38,3 @@ do
 		;;
 	esac
 done
-# fi
