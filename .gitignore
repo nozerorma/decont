@@ -1,5 +1,4 @@
 pipeline.log
-Log.out
 out/*
 !out/.gitkeep
 res/*
@@ -10,4 +9,3 @@ data/*
 log/*
 !log/.gitkeep
 scripts/*.swp
-scripts/onelinerpipeline.sh
