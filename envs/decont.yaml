@@ -4,13 +4,10 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - fastqc
-  - seqtk
   - cutadapt
   - star
-  - multiqc
-  - seqkit
   - ca-certificates
-  - certifi
   - openssl
-prefix: /home/vant/mambaforge/envs/decont
+  - seqkit
+  - curl
+prefix: /home/miguel/mambaforge/envs/decont
