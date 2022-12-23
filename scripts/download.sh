@@ -10,7 +10,7 @@ then
 	
 	echo -e "Veryfing download integrity..." # md5sum verification
 	cd $directoryurl
-	curl ${downloadurl}.md5 | md5sum -c --ignore-missing > verifiedmd5.tmp
+	curl $downloadurl.md5 | md5sum -c --ignore-missing > verifiedmd5.tmp
 	if grep OK *.tmp 
 	then
         	echo -e "Download integrity verified\n\n"
